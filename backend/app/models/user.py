@@ -12,6 +12,7 @@ class User(Base):
     first_name = Column(String(), nullable=False)
     last_name = Column(String(),  nullable=False)
     email = Column(String(), nullable=False, unique=True)
+    password_hash = Column(String(), nullable=False)
     signup_date = Column(DateTime(), default=datetime.now)
 
     assigned_issues = relationship("Issue", back_populates="assigned_user")
