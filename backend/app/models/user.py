@@ -18,4 +18,5 @@ class User(Base):
 
     assigned_issues = relationship("Issue", back_populates="assigned_user")
     assigned_roles = relationship("UserRole", back_populates="user")
+    refresh_tokens = relationship("RefreshToken", back_populates="user")
     

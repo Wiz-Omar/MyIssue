@@ -1,10 +1,7 @@
 import os
 from logging.config import fileConfig
 
-import app.models.issue
-import app.models.role
-import app.models.user
-import app.models.user_role
+import app.models
 from alembic import context
 from app.database import Base
 from dotenv import load_dotenv
