@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 
 
-class Token(BaseModel):
+class TokenResponse(BaseModel):
     access_token: str
-    token_type: str
+    refresh_token: str
+    token_type: str = "bearer"
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

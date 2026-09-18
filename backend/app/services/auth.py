@@ -3,9 +3,11 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.core.security import get_password_hash, verify_password
+from app.core.security import create_access_token, get_password_hash, verify_password
 from app.models.user import User
+from app.schemas.auth import TokenResponse
 from app.schemas.user import UserCreate
+from app.services.refresh_token import RefreshTokenService
 
 
 class UserService:
@@ -59,9 +61,7 @@ class UserService:
         if user_id:
             user: User = self.get_user_by_id(user_id=user_id)
         else:
-            print("trying email login")
             user: User = self.get_user_by_email(email=email)
-            print(user)
         if not user:
             # Calling verify burns the same time when no user is found
             # Makes the response timing indistinguishable for an attacker
@@ -70,3 +70,12 @@ class UserService:
         if not verify_password(password, user.password_hash):
             return None
         return user
+
+    def issue_tokens(self, user_id: int) -> TokenResponse:
+        access_token = create_access_token(data={"sub": str(user_id)})
+        refresh_token = RefreshTokenService(self.db).create(user_id)
+
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token
+        )

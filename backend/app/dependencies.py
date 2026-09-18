@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
@@ -6,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from app.core.security import decode_jwt_token, encode_jwt_token
+from app.core.security import decode_jwt_token
 from app.database import get_db
 from app.models.user import User
 from app.services.auth import UserService
@@ -35,12 +34,3 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     return user
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    return encode_jwt_token(to_encode)
