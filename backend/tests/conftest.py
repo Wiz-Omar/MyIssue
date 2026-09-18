@@ -1,33 +1,37 @@
 import os
 
-os.environ["DATABASE_URL"] = "sqlite://"
+import pytest
+
+os.environ["DATABASE_URL"] = "postgresql://postgres:postgres@localhost:5432/myissue_test"
 TEST_JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"] = "8681459bddd74cd4bdf90bb164f48ea06442d768837fbd17af1fa202f0d06eb7"
 TEST_JWT_ALGORITHM = os.environ["JWT_ALGORITHM"] = "HS256"
 
+import app.models
 from app.database import Base, get_db
 from app.main import app
-from sqlalchemy import StaticPool, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(
-            os.environ["DATABASE_URL"],
-            connect_args={
-                    "check_same_thread": False,
-            },
-            poolclass=StaticPool
-        )
+engine = create_engine(os.environ["DATABASE_URL"])
 
-Base.metadata.create_all(bind=engine)
+TestingSessionLocal = sessionmaker(bind=engine)
 
-TestingSessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+@pytest.fixture(scope="function")
+def db_session():
+    Base.metadata.create_all(bind=engine)
+    session = TestingSessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+        Base.metadata.drop_all(bind=engine)
+        engine.dispose()
 
 def override_get_db():
     database = TestingSessionLocal()
-    yield database
-    database.close()
+    try:
+        yield database
+    finally:
+        database.close()
 
 app.dependency_overrides[get_db] = override_get_db
