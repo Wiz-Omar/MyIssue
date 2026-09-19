@@ -1,5 +1,6 @@
 import secrets
 from datetime import datetime, timedelta, timezone
+from uuid import UUID
 
 from fastapi import HTTPException
 from sqlalchemy import delete, select
@@ -13,7 +14,7 @@ class RefreshTokenService:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, user_id: int) -> str:
+    def create(self, user_id: UUID) -> str:
         raw_token = secrets.token_urlsafe(32)
         token_hash = hash_token(raw_token) # Normal SHA256 hash is sufficient since raw_token is already random
 
@@ -34,13 +35,13 @@ class RefreshTokenService:
         self.db.execute(statement)
         self.db.commit()
 
-    def validate_and_rotate(self, raw_token: str) -> int:
+    def validate_and_rotate(self, raw_token: str) -> UUID:
         token_hash = hash_token(raw_token)
         statement = select(RefreshToken).filter_by(token_hash=token_hash)
         stored: RefreshToken | None = self.db.execute(statement).scalar_one_or_none()
         if not stored or stored.expires_at < datetime.now(timezone.utc):
             raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
-        user_id = stored.user_id
+        user_id: UUID = stored.user_id
         self.db.delete(stored)
         self.db.commit()
         return user_id

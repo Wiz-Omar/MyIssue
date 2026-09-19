@@ -12,7 +12,10 @@ from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET_KEY
 
 
 def test_register_user(db_session: Session):
-    client = TestClient(app)  
+    client = TestClient(app)
+
+    users: list[User] = db_session.query(User).filter_by(email="john.doe@gmail.com").all()
+    assert len(users) == 0
 
     response = client.post(  
         "/auth/register", json={
@@ -22,10 +25,13 @@ def test_register_user(db_session: Session):
                 "password": "123456789"}
     )
 
+    users: list[User] = db_session.query(User).filter_by(email="john.doe@gmail.com").all()
+    assert len(users) == 1
+
     data: dict = response.json()
 
     assert response.status_code == 201  
-    assert data["id"] > 0
+    assert data["id"] == str(users[0].id)
     assert data["first_name"] == "john"
     assert data["last_name"] == "doe"
     assert data["email"] == "john.doe@gmail.com"

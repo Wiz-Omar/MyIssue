@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, String
+import uuid
+
+from sqlalchemy import Column, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -7,7 +10,7 @@ from app.database import Base
 class Role(Base):
     __tablename__ = 'roles'
 
-    id = Column(Integer(), primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     role_name = Column(String(), nullable=False, unique=True)
 
     used_role = relationship("UserRole", back_populates="role")

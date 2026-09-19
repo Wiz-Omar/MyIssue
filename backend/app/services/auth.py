@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -34,7 +36,7 @@ class UserService:
             print("error:", str(e))
             raise HTTPException(status_code=500, detail="Database error")
 
-    def get_user_by_id(self, user_id: int):
+    def get_user_by_id(self, user_id: UUID):
         try:
             statement = select(User).filter_by(id=user_id)
             return self.db.execute(statement).scalar_one_or_none()
@@ -51,7 +53,7 @@ class UserService:
                 raise HTTPException(status_code=500, detail="Database error")
 
     def authenticate_user(
-        self, password, user_id: int | None = None, email: str | None = None
+        self, password, user_id: UUID | None = None, email: str | None = None
     ) -> User | None:
         if not user_id and not email:
             # Calling verify burns the same time when no user is found
@@ -71,7 +73,7 @@ class UserService:
             return None
         return user
 
-    def issue_tokens(self, user_id: int) -> TokenResponse:
+    def issue_tokens(self, user_id: UUID) -> TokenResponse:
         access_token = create_access_token(data={"sub": str(user_id)})
         refresh_token = RefreshTokenService(self.db).create(user_id)
 

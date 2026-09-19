@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -39,5 +41,5 @@ async def logout(data: UserLogoutRequest, db: Session = Depends(get_db)): #noqa 
 async def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)): #noqa B008
     user_service: UserService = UserService(db)
     refresh_token_service: RefreshTokenService = RefreshTokenService(db)
-    user_id: int = refresh_token_service.validate_and_rotate(data.refresh_token)
+    user_id: UUID = refresh_token_service.validate_and_rotate(data.refresh_token)
     return user_service.issue_tokens(user_id)
