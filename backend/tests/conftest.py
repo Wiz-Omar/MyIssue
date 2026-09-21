@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from app.models.role import Role
 
 os.environ["DATABASE_URL"] = "postgresql://postgres:postgres@localhost:5432/myissue_test"
 TEST_JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"] = "8681459bddd74cd4bdf90bb164f48ea06442d768837fbd17af1fa202f0d06eb7"
@@ -20,6 +21,8 @@ TestingSessionLocal = sessionmaker(bind=engine)
 def db_session():
     Base.metadata.create_all(bind=engine)
     session = TestingSessionLocal()
+    session.add_all([Role(role_name="admin"), Role(role_name="developer")])
+    session.commit()
     try:
         yield session
     finally:
