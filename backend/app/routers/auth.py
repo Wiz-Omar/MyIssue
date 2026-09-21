@@ -16,7 +16,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):  #noqa: B008
     user_service = UserService(db)
     user: User = user_service.register_user(user_data)
-    return user # FastAPI converts User type to UserResponse since response model is set above
+    return user #FastAPI converts User type to UserResponse since response model is set above
 
 @router.post("/login", response_model=TokenResponse, status_code=status.HTTP_200_OK)
 async def login(user_data: UserLogin, db: Session = Depends(get_db)):  #noqa: B008

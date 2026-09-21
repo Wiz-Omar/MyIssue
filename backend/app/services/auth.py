@@ -56,8 +56,8 @@ class UserService:
         self, password, user_id: UUID | None = None, email: str | None = None
     ) -> User | None:
         if not user_id and not email:
-            # Calling verify burns the same time when no user is found
-            # Makes the response timing indistinguishable for an attacker
+            #calling verify burns the same time when no user is found
+            #makes the response timing indistinguishable for an attacker
             verify_password(password)
             return None
         if user_id:
@@ -65,8 +65,8 @@ class UserService:
         else:
             user: User = self.get_user_by_email(email=email)
         if not user:
-            # Calling verify burns the same time when no user is found
-            # Makes the response timing indistinguishable for an attacker
+            #calling verify burns the same time when no user is found
+            #makes the response timing indistinguishable for an attacker
             verify_password(password)
             return None
         if not verify_password(password, user.password_hash):

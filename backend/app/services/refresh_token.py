@@ -16,7 +16,7 @@ class RefreshTokenService:
 
     def create(self, user_id: UUID) -> str:
         raw_token = secrets.token_urlsafe(32)
-        token_hash = hash_token(raw_token) # Normal SHA256 hash is sufficient since raw_token is already random
+        token_hash = hash_token(raw_token) #normal SHA256 hash is sufficient since raw_token is already random
 
         refresh_token = RefreshToken(
             user_id=user_id,
