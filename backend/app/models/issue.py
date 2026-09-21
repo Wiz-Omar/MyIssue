@@ -17,5 +17,8 @@ class Issue(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
+    created_by = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     assigned_user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
-    assigned_user = relationship("User", back_populates="assigned_issues")
+    
+    creator = relationship("User", foreign_keys=[created_by], back_populates="created_issues")
+    assigned_user = relationship("User", foreign_keys=[assigned_user_id], back_populates="assigned_issues")
