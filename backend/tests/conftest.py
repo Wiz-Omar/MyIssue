@@ -1,19 +1,17 @@
 import os
 
-import pytest
-from app.models.role import Role
-
-os.environ["DATABASE_URL"] = "postgresql://postgres:postgres@localhost:5432/myissue_test"
-TEST_JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"] = "8681459bddd74cd4bdf90bb164f48ea06442d768837fbd17af1fa202f0d06eb7"
-TEST_JWT_ALGORITHM = os.environ["JWT_ALGORITHM"] = "HS256"
+os.environ["ENV_FILE"] = ".env.test"
 
 import app.models
+import pytest
 from app.database import Base, get_db
 from app.main import app
+from app.models.role import Role
+from app.settings import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine(os.environ["DATABASE_URL"])
+engine = create_engine(settings.database_url)
 
 TestingSessionLocal = sessionmaker(bind=engine)
 

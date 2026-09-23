@@ -1,12 +1,13 @@
 import hashlib
-import os
 from datetime import datetime, timedelta, timezone
 
 import jwt
 from pwdlib import PasswordHash
 
-JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
-JWT_ALGORITHM = os.environ["JWT_ALGORITHM"]
+from app.settings import settings
+
+JWT_SECRET_KEY = settings.jwt_secret_key
+JWT_ALGORITHM = settings.jwt_algorithm
 password_hash = PasswordHash.recommended()
 
 def encode_jwt_token(payload: dict):

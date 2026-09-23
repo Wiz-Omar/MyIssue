@@ -4,6 +4,7 @@ from logging.config import fileConfig
 import app.models
 from alembic import context
 from app.database import Base
+from app.settings import settings
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
@@ -32,7 +33,7 @@ target_metadata = None
 # Use DATABASE_URL from .env
 config.set_main_option(
     "sqlalchemy.url",
-    os.environ["DATABASE_URL"]
+    settings.database_url
 )
 
 if config.config_file_name is not None:

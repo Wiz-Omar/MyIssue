@@ -6,9 +6,9 @@ from app.main import app
 from app.models.refresh_token import RefreshToken
 from app.models.user import User
 from app.schemas.auth import TokenResponse
+from app.settings import settings
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from tests.conftest import TEST_JWT_ALGORITHM, TEST_JWT_SECRET_KEY
 
 
 def test_register_user(db_session: Session):
@@ -88,7 +88,7 @@ def test_login_user(db_session: Session):
     assert data["refresh_token"]
 
     payload = jwt.decode(
-        data["access_token"], TEST_JWT_SECRET_KEY, algorithms=[TEST_JWT_ALGORITHM]
+        data["access_token"], settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
     )
     assert payload["sub"] == str(user.id)
 
