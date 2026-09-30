@@ -29,13 +29,9 @@ def client_with_users(db_session: Session) -> TestClient:
     })
 
     user_admin: User = db_session.query(User).filter_by(email="john.doe@gmail.com").first()
-    user_developer: User = db_session.query(User).filter_by(email="oyounes57@gmail.com").first()
-    user_second_developer: User = db_session.query(User).filter_by(email="max_vilhem@hotmail.com").first()
 
     user_role_service: UserRoleService = UserRoleService(db_session)
     user_role_service.add_user_role(RoleName.ADMIN, user_admin.id)
-    user_role_service.add_user_role(RoleName.DEVELOPER, user_developer.id)
-    user_role_service.add_user_role(RoleName.DEVELOPER, user_second_developer.id)
 
     return client
 

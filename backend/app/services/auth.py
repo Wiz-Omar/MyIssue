@@ -8,8 +8,10 @@ from sqlalchemy.orm import Session
 from app.core.security import create_access_token, get_password_hash, verify_password
 from app.models.user import User
 from app.schemas.auth import TokenResponse
+from app.schemas.role import RoleName
 from app.schemas.user import UserCreate
 from app.services.refresh_token import RefreshTokenService
+from app.services.user_role import UserRoleService
 
 
 class UserService:
@@ -27,6 +29,9 @@ class UserService:
 
             self.db.add(user)
             self.db.commit()
+            self.db.refresh(user)
+
+            UserRoleService(self.db).add_user_role(RoleName.DEVELOPER, user.id)
             self.db.refresh(user)
 
             return user

@@ -37,6 +37,8 @@ def test_register_user(db_session: Session):
     assert data["email"] == "john.doe@gmail.com"
     parsed_date = datetime.fromisoformat(data["signup_date"])
     assert parsed_date < datetime.now(timezone.utc)
+    assert len(data["roles"]) == 1
+    assert data["roles"][0] == "developer"
     #check that the response model is UserReponse, not User; meaning password_hash is omitted
     assert not data.get("password_hash")
 

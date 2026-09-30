@@ -24,14 +24,12 @@ def client_with_users(db_session: Session) -> TestClient:
     })
 
     user_admin = db_session.query(User).filter_by(email="john.doe@gmail.com").first()
-    user_developer = db_session.query(User).filter_by(email="oyounes57@gmail.com").first()
 
     roles = db_session.query(Role).all()
     roles_by_name = {r.role_name: r for r in roles}
-    role_admin, role_developer = roles_by_name["admin"], roles_by_name["developer"]
+    role_admin = roles_by_name["admin"]
 
     db_session.add(UserRole(user_id=user_admin.id, role_id=role_admin.id))
-    db_session.add(UserRole(user_id=user_developer.id, role_id=role_developer.id))
     db_session.commit()
 
     return client
@@ -46,6 +44,7 @@ def test_add_user_role_success(db_session: Session):
     db_session.refresh(user)
 
     service = UserRoleService(db_session)
+    # add the user as a developer manually since we are not using the auth service
     user_role = service.add_user_role(RoleName.DEVELOPER, user.id)
 
     assert user_role.user_id == user.id
@@ -73,11 +72,11 @@ def test_add_user_role_duplicate(db_session: Session):
     assert exc_info.value.detail == "User already has this role"
 
 def test_has_role_true_and_false(client_with_users: TestClient, db_session: Session):
-    admin = db_session.query(User).filter_by(email="john.doe@gmail.com").first()
+    admin = db_session.query(User).filter_by(email="oyounes57@gmail.com").first()
     service = UserRoleService(db_session)
 
-    assert service.has_role(RoleName.ADMIN, admin.id) is True
-    assert service.has_role(RoleName.DEVELOPER, admin.id) is False
+    assert service.has_role(RoleName.ADMIN, admin.id) is False
+    assert service.has_role(RoleName.DEVELOPER, admin.id) is True
 
 def test_add_user_role_as_admin(client_with_users: TestClient, db_session: Session):
     admin = db_session.query(User).filter_by(email="john.doe@gmail.com").first()

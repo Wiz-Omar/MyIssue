@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.schemas.role import RoleName
 
 
 class User(Base):
@@ -22,4 +23,8 @@ class User(Base):
     assigned_issues = relationship("Issue", foreign_keys="[Issue.assigned_user_id]", back_populates="assigned_user")
     assigned_roles = relationship("UserRole", back_populates="user")
     refresh_tokens = relationship("RefreshToken", back_populates="user")
+
+    @property
+    def roles(self) -> list[RoleName]:
+        return [RoleName(ur.role.role_name) for ur in self.assigned_roles]
     

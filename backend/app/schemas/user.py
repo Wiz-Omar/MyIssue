@@ -3,6 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.role import RoleName
+
 
 class UserCreate(BaseModel):
     first_name: str
@@ -25,3 +27,4 @@ class UserResponse(BaseModel):
     last_name: str
     email: str
     signup_date: datetime
+    roles: list[RoleName]
